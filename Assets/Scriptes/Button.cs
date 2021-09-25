@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class Button : MonoBehaviour
 {
     [SerializeField] private float _speedChangeScale;
-    [SerializeField] private float _targetValue;
+    [SerializeField] private float _targetScale;
     [SerializeField] private Color _targetColor;
 
     private RectTransform _rectTransform;
@@ -19,20 +19,20 @@ public class Button : MonoBehaviour
     {
         if (_setScaleJob != null)
             StopCoroutine(_setScaleJob);
-        _setScaleJob = StartCoroutine(SetScale(_targetValue));
+        _setScaleJob = StartCoroutine(SetScale(_targetScale));
     }
 
-    private IEnumerator SetScale(float targetValue)
+    private IEnumerator SetScale(float targetScale)
     {
         Vector3 vector = _rectTransform.transform.localScale;
         _image.color = _targetColor;
-        while (vector.x != targetValue)
+        while (vector.x != targetScale)
         {
-            vector.x = Mathf.MoveTowards(vector.x, targetValue, _speedChangeScale * Time.deltaTime);
-            vector.y = Mathf.MoveTowards(vector.y, targetValue, _speedChangeScale * Time.deltaTime);
+            vector.x = Mathf.MoveTowards(vector.x, targetScale, _speedChangeScale * Time.deltaTime);
+            vector.y = Mathf.MoveTowards(vector.y, targetScale, _speedChangeScale * Time.deltaTime);
             _rectTransform.transform.localScale = vector;
-            if (vector.x == targetValue)
-                targetValue = 1;
+            if (vector.x == targetScale)
+                targetScale = 1;
             yield return null;
         }
         _image.color = _defaultColor;
