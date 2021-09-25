@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
@@ -8,48 +9,32 @@ public class Player : MonoBehaviour
     [SerializeField] private float _health;
     [SerializeField] private float _maxHealth;
     [SerializeField] private float _minHealth;
-    [SerializeField] private float _stepChangeHealth;
-    [SerializeField] private Slider _healthSlider;
-    [SerializeField] private float _speedChangeSlider;
 
-    private Coroutine _setValueJob;
-    
-    public void AddHealth()
+    public event UnityAction<float> HealthChanged;
+
+    public float MaxHealth
     {
-        _health += _stepChangeHealth;
+        get { return _maxHealth; }
+    }
+
+    public float MinHealth
+    {
+        get { return _minHealth; }
+    }
+
+    public void AddHealth(float stepChangeHealth)
+    {
+        _health += stepChangeHealth;
         if (_health > _maxHealth)
             _health = _maxHealth;
-        StartChangeSlider();
+        HealthChanged?.Invoke(_health);
     }
 
-    public void SubHealth()
+    public void SubHealth(float stepChangeHealth)
     {
-        _health -= _stepChangeHealth;
+        _health -= stepChangeHealth;
         if (_health < _minHealth)
             _health = _minHealth;
-        StartChangeSlider();
-    }
-
-    private void StartChangeSlider()
-    {
-        if (_setValueJob != null)
-            StopCoroutine(_setValueJob);
-        _setValueJob = StartCoroutine(ChangeSlider(_health));
-    }
-
-    private IEnumerator ChangeSlider(float targetValue)
-    {
-        while (_healthSlider.value != targetValue)
-        {
-            _healthSlider.value = Mathf.MoveTowards(_healthSlider.value, targetValue, _speedChangeSlider * Time.deltaTime);
-            yield return null;
-        }
-    }
-
-    private void Start()
-    {
-        _healthSlider.maxValue = _maxHealth;
-        _healthSlider.minValue = _minHealth;
-        _healthSlider.value = _health;
-    }
+        HealthChanged?.Invoke(_health);
+    }  
 }
